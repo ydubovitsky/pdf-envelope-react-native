@@ -1,12 +1,14 @@
 import { NavigationContainer } from "@react-navigation/native";
-import BottomTabNavigation from "./src/navigation/bottom-tab.navigation";
+import MainStackNavigator from "./src/navigation/main-stack.navigation";
+import { Provider } from "react-redux";
+import store from "./src/redux/store";
 
 export default function App() {
-
   return (
-    <NavigationContainer>
-      <BottomTabNavigation/>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <MainStackNavigator />
+      </NavigationContainer>
+    </Provider>
   );
 }
-
