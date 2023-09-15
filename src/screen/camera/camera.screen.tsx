@@ -1,19 +1,24 @@
-import { Camera, CameraCapturedPicture, CameraType } from "expo-camera";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useState, useRef } from "react";
-import {
-  Button,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Camera, CameraCapturedPicture, CameraType } from "expo-camera";
+import { Image } from "expo-image";
+import { useRef, useState } from "react";
+import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { addPhoto, lastPhotoSelector } from "../../redux/features/photos.slice";
+import { useAppSelector } from "../../redux/hooks";
+import { useAppDispatch } from "../../redux/store";
+import { PhotoEntity } from "../../types";
 
 // https://docs.expo.dev/versions/latest/sdk/camera/#usage
 // https://stackoverflow.com/questions/52707002/how-to-snap-pictures-using-expo-react-native-camera
 
-const CameraScreen: React.FC = (): JSX.Element => {
-  const [type, setType] = useState(CameraType.back);
+type CameraScreenProps = {
+  navigation: any
+}
+
+const CameraScreen: React.FC<CameraScreenProps> = ({ navigation }): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const lastPhoto: PhotoEntity = useAppSelector<PhotoEntity>(lastPhotoSelector);
+  const [type, setType] = useState<CameraType>(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const ref = useRef<Camera>(null);
 
@@ -34,22 +39,32 @@ const CameraScreen: React.FC = (): JSX.Element => {
     );
   }
 
-  function toggleCameraType() {
+  const toggleCameraType = (): void => {
     setType((current) =>
       current === CameraType.back ? CameraType.front : CameraType.back
     );
-  }
+  };
 
-  const takePhoto = async () => {
+  const takePhoto = async (): Promise<void> => {
     if (ref.current !== null) {
-      const photo : CameraCapturedPicture = await ref.current.takePictureAsync();
+      const photo: CameraCapturedPicture = await ref.current.takePictureAsync();
+      dispatch(addPhoto(photo));
     }
   };
+
+  const navigateToDocsScreen = () : void => {
+    navigation.navigate('Docs')
+  }
 
   return (
     <View style={styles.container}>
       <Camera style={styles.camera} type={type} ref={ref}>
         <View style={styles.buttonContainer}>
+          {lastPhoto !== undefined ? (
+            <TouchableOpacity style={styles.button} onPress={() => navigateToDocsScreen()}>
+              <Image source={lastPhoto.data.uri} style={styles.lastPhoto} />
+            </TouchableOpacity>
+          ) : null}
           <TouchableOpacity style={styles.button} onPress={takePhoto}>
             <AntDesign name="camera" size={30} color="black" />
           </TouchableOpacity>
@@ -94,6 +109,12 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     backgroundColor: "white",
+    opacity: 0.8,
+    borderRadius: 30,
+  },
+  lastPhoto: {
+    width: 60,
+    height: 60,
     opacity: 0.8,
     borderRadius: 30,
   },
