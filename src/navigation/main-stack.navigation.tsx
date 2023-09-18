@@ -17,7 +17,7 @@ const MainStackNavigator = () => (
     }}
   >
     <Stack.Screen name="Старт" component={StartScreen} />
-    <Stack.Screen name="Камера" component={BottomTabNavigation} />
+    <Stack.Screen name="Навигация по нижней вкладке" component={BottomTabNavigation} />
   </Stack.Navigator>
 );
 

@@ -28,7 +28,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
           <ButtonComponent
             backgroundColor="#0071F2"
             title="Начать"
-            onPress={() => navigateToScreen("Камера")}
+            onPress={() => navigateToScreen("Навигация по нижней вкладке")}
           />
         </View>
       </View>
